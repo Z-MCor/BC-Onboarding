@@ -5,7 +5,7 @@
   red="\e[31m"
   cyan="\e[36m"
   endcolor="\e[0m"
-  log_folder="/var/run/janus"
+  log_folder="/var/log/zscaler/janus"
     
   #---------------------BC OS Section------------------------
   echo
