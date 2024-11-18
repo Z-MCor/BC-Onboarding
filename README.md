@@ -16,7 +16,10 @@ no installation required
 Clone the script
 
 ```
-curl -O <URLtoFile>
+curl -O https://raw.githubusercontent.com/Z-MCor/BC-Onboarding/refs/heads/main/onboarding_checks_EdgeOS.sh
+OR
+curl -O https://raw.githubusercontent.com/Z-MCor/BC-Onboarding/refs/heads/main/onboarding_checks_bc01.sh
+
 ```
 Make file executable
 ```
