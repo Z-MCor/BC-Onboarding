@@ -96,16 +96,16 @@ fi
   #extract interface IP
   mgmt_int_ip=$(echo $mgmt_int_info | awk -F' ' '{print $19}')
   	
-    echo -e "${bold}The mgmt interface: Interface/Status/MAC/IP: $mgmt_if, $mgmt_int_status, $mgmt_int_mac, $mgmt_int_ip${endcolor}"
+    echo -e "${bold}The Management interface: Interface/Status/MAC/IP: $mgmt_if, $mgmt_int_status, $mgmt_int_mac, $mgmt_int_ip${endcolor}"
     echo
 
   #Validate mgmt-int can resolve
   mgmt_dns_check=$(nslookup www.zscaler.com 2>&1)
    if [ $? -eq 0 ]; then
-    echo -e "${bold}DNS resolution seems to work:${endcolor}"
+    echo -e "${bold}DNS resolution seems to work from the Management Interface:${endcolor}"
     printf "%s" "$mgmt_dns_check"
    else
-    echo -e "${red}DNS resolution seems to have issues:${endcolor}"
+    echo -e "${red}DNS resolution seems to have issues from the Management Interface:${endcolor}"
     printf "%s" "$mgmt_dns_check"
    fi
   echo
@@ -115,11 +115,11 @@ fi
   mgmt_ping_check=$(ping -c 3 104.18.29.74 2>&1)
    if [ $? -eq 0 ]; then
     mgmt_ping_check_simple=$(printf "%s" "$mgmt_ping_check | head -4")
-    echo -e "${bold}mgmt interface can successfully ping 104.18.29.74, zscaler website:${endcolor}"
+    echo -e "${bold}The Management interface can successfully ping 104.18.29.74, zscaler website:${endcolor}"
     printf "%s" "$mgmt_ping_check_simple"
    else
     mgmt_ping_check_simple=$(printf "%s" "$mgmt_ping_check | head -4")
-    echo -e "${red}mgmt interface cannot ping zscaler.com. not needed for enrollment, but might indicate connection issue:${endcolor}"
+    echo -e "${red}The Management interface cannot ping zscaler.com. not needed for enrollment, but might indicate connection issue:${endcolor}"
     printf "%s" "$mgmt_ping_check_simple"
    fi
   echo
@@ -138,22 +138,34 @@ fi
     done
     echo
 
+  #validate if NTP works from the Management Interface
+    ntp_url=pool.ntp.org
+    ntp_date=$(ntpdate -u $ntp_url)
+      if [ $? -eq 0 ]; then
+       echo -e "${bold} NTP is working ${endcolor}"
+       echo -e "\t --> $ntpdate"
+      else
+       echo -e "${red} NTP failed.${endcolor}"
+      fi
+    echo
+
+
   #validate if BC ZTP-Agent can auth to provisioning
 	provisioning_auth_send=$(cat -n /var/log/syslog | grep --text 'Sending Request:' | grep --text ztpserver/api/v1/authenticate | tail -1)
 	if [[ -n $provisioning_auth_send ]]; then
-	 echo -e "${bold}Auth was send:${endcolor}"
-	 echo -e "\t --> $provisioning_auth_send"
+	  echo -e "${bold}Auth was send:${endcolor}"
+	  echo -e "\t --> $provisioning_auth_send"
 	else 
-	 echo -e "${red}No record that Authentication was send has bene found${endcolor}"
+	  echo -e "${red}No record that Authentication was send has bene found${endcolor}"
 	fi
 	echo
 	
 	provisioning_auth_success=$(cat -n /var/log/syslog | grep --text 'Authentication' | tail -1)
 	if [[ -n $provisioning_auth_success ]]; then
-	echo -e "${bold}Auth was successfull:${endcolor}"
-	echo -e "\t --> $provisioning_auth_success"
+	  echo -e "${bold}Auth was successfull:${endcolor}"
+	  echo -e "\t --> $provisioning_auth_success"
 	else 
-	 echo -e "${red}No successfull Authentication was found${endcolor}"
+	  echo -e "${red}No successfull Authentication was found${endcolor}"
 	fi
 	echo
 

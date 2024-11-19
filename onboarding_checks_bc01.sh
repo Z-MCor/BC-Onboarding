@@ -5,7 +5,7 @@
   red="\e[31m"
   cyan="\e[36m"
   endcolor="\e[0m"
-  log_folder="/var/log/zscaler/janus"
+  log_folder="/var/log/zscaler"
     
   #---------------------BC OS Section------------------------
   echo
@@ -123,6 +123,13 @@
   fi
   echo
   echo
+
+  #verify BC Route Table
+  bc_route_table=$(setfib 1 netstat -rn4)
+  echo "${bold}This is the BC Route Table (FIB0){endcolor}"
+  printf "%s" "$bc_route_table"
+  echo
+  echo
   
 ###---------------------Edgeconnector Section------------------------  
 echo -e "${bold}${cyan}This is the EdgeConnector Section${endcolor}"
@@ -149,7 +156,7 @@ echo -e "${bold}${cyan}This is the EdgeConnector Section${endcolor}"
   
   #last configuration updates
       ## Search in log files starting from the last modified file
-      for configuration_log_file in $(ls -t "$log_folder"/*); do
+      for configuration_log_file in $(ls -t "$log_folder"/janus*); do
               last_config_result=$(grep -r -e "New Incoming Policy Configuration" "$configuration_log_file" | tail -1)
               if [[ -n "$last_config_result" ]]; then
                last_config_date=$(echo "$last_config_result" | awk -F' ' '{print $1}' | cut -c 2-12)
